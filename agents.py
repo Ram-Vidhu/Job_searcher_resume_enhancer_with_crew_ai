@@ -1,34 +1,44 @@
-from crewai import Agent, LLM
 from dotenv import load_dotenv
-from tools import pdf_search_tool
 import os
+from crewai import Agent
+from crewai import LLM
+from tools import pdf_reader_tool, job_searcher_tool
 
 load_dotenv()
 os.environ["GEMINI_API_KEY"] = os.getenv("GEMINI_API_KEY")
-os.environ["MODEL_NAME"]="gemini-2.5-flash"
+
 
 llm = LLM(
-    model="gemini/gemini-2.5-flash",
+    model="gemini/gemini-2.0-flash",
     temperature=0.7,
 )
 
-resume_parser=Agent(
-    role='Resume Parser',
-    goal= ("""
-        Read resume from the path {path} and extract the following details
-        - Role they are looking for
-        - Skills
-        - summary (summary of the roles he contributed)
-        - Experience (in years, sum it up across companies and categorise it as juinor, mid, senior, mid-senior based on the years of experience)
-        - Last worked location
-    """),
+reader_agent = Agent(
+    role="Reader",
+    goal="Extract text from documents.",
     verbose=True,
     memory=True,
-    backstory=(
-        "You are a resume parser Agent."
-        "You can read the resume and extract the required information in the specified format."
-    ),
-    tools=[pdf_search_tool],
+    backstory="You are an expert in extracting text from PDF documents.",
+    tools=[pdf_reader_tool],
+    allow_delegation=True,
+    llm=llm
+)
+
+summarize_agent = Agent(
+    role="Summarizer",
+    goal="Summarize the content of documents",
+    verbose=True,
+    backstory="You are skilled at summarizing long documents into concise summaries.",
+    allow_delegation=True,
+    llm=llm
+)
+
+job_searcher_agent = Agent(
+    role="Job Searcher",
+    goal="Find relevant job listings based on resume details from the available chromadb using the provided tool.",
+    verbose=True,
+    backstory="You are an expert in searching and finding job listings based on resume details from the available chromadb using the provided tool. DONT give job recommendations from your own knowledge, only use the tool to search the chromadb and give results based on that.",
+    tools=[job_searcher_tool],
     allow_delegation=False,
     llm=llm
 )
