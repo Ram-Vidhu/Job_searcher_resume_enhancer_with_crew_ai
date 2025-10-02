@@ -1,7 +1,7 @@
 import os
 from crewai import Crew, Process
-from agents import reader_agent, summarize_agent, job_searcher_agent
-from tasks import read_pdf_task, summarize_text_task, job_searcher_task
+from agents import reader_agent, summarize_agent, job_searcher_agent, resume_drafting_agent, resume_formatter_agent
+from tasks import read_pdf_task, summarize_text_task, job_searcher_task, resume_drafting_task, resume_formatting_task
 
 
 def run_job_analysis_crew(pdf_path: str):
@@ -21,8 +21,8 @@ def run_job_analysis_crew(pdf_path: str):
 
     # Define Crew
     job_analysis_crew = Crew(
-        agents=[reader_agent, summarize_agent, job_searcher_agent],
-        tasks=[read_pdf_task, summarize_text_task, job_searcher_task],
+        agents=[reader_agent, summarize_agent, job_searcher_agent, resume_drafting_agent, resume_formatter_agent],
+        tasks=[read_pdf_task, summarize_text_task, job_searcher_task, resume_drafting_task, resume_formatting_task],
         process=Process.sequential,
         # verbose=True,  # Set verbose to 2 for detailed output in the console/logs
     )
@@ -31,3 +31,5 @@ def run_job_analysis_crew(pdf_path: str):
     crew_output = job_analysis_crew.kickoff(inputs={'pdf_path': pdf_path})
 
     return str(crew_output)
+
+# run_job_analysis_crew('Resume/fake_resume_variation_1.pdf')
