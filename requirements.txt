@@ -1,4 +1,8 @@
 crewai
 crewai_tools
 load_dotenv
-langchain-huggingface
+PyPDF2
+langchain_openai
+streamlit
+google-genai
+langchain-google-genai
