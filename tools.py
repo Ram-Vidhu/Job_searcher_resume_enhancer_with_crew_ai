@@ -3,7 +3,6 @@ from PyPDF2 import PdfReader
 import chromadb
 import json
 from sentence_transformers import SentenceTransformer
-from typing import Optional
 import pandas as pd
 
 
@@ -26,7 +25,7 @@ class JobSearcherTool(BaseTool):
     name: str = "Job Searcher"
     description: str = "Searches for job listings based on resume details."
 
-    def _run(self, resume_details: str, top_k: int = 5, filters: Optional[dict] = None):
+    def _run(self, resume_details: str, top_k: int = 5):
         # Embedding model
         sent_transform = SentenceTransformer("all-MiniLM-L6-v2")
 
@@ -52,7 +51,7 @@ class JobSearcherTool(BaseTool):
         results = collection.query(
             query_embeddings=[embedding.tolist()],
             n_results=top_k,
-            where=filters  # will be None by default
+            # where=filters  # will be None by default
         )
 
         jobs = []
@@ -63,7 +62,10 @@ class JobSearcherTool(BaseTool):
             })
         result = pd.DataFrame(jobs)
         result.sort_values(by="similarity_score", ascending=False, inplace=True)
-        return result
+
+        json_string = result.to_json(orient="records", indent=4)
+
+        return json_string
 
 
 job_searcher_tool = JobSearcherTool()
