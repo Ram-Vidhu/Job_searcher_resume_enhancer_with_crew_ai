@@ -1,3 +1,5 @@
+pyspark
+chromadb
 crewai
 crewai_tools
 load_dotenv
