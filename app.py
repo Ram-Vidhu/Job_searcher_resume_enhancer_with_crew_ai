@@ -6,6 +6,8 @@ import pandas as pd
 from crew import run_job_analysis_crew
 import pdfkit
 import markdown
+from weasyprint import HTML
+import io
 
 
 # Function to clean and parse the LLM JSON output
@@ -121,9 +123,10 @@ def main():
                             # 1. Convert Markdown to HTML
                             html_content = markdown.markdown(final_resume_markdown)
 
-                            # 2. Convert HTML to PDF using pdfkit, saving to an in-memory buffer
-                            # Note: This requires wkhtmltopdf installed and in PATH.
-                            pdf_bytes = pdfkit.from_string(html_content, False)
+                            # Generate PDF in-memory
+                            pdf_io = io.BytesIO()
+                            HTML(string=html_content).write_pdf(target=pdf_io)
+                            pdf_bytes = pdf_io.getvalue()
 
                             # 3. Create the download button
                             st.download_button(
