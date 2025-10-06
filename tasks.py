@@ -1,5 +1,5 @@
 from crewai import Task
-from tools import pdf_reader_tool
+from tools import pdf_reader_tool, job_searcher_tool
 from agents import reader_agent, summarize_agent, job_searcher_agent, resume_formatter_agent, aggregator_agent
 
 read_pdf_task = Task(
@@ -22,7 +22,8 @@ summarize_text_task = Task(
         '"role": "...", "skills": ["...", "..."], "summary":"....", "experience": "...", "last_location": "..."'
     """),
     agent=summarize_agent,
-    model="gemini/gemini-2.5-flash"
+    # model="gemini/gemini-2.0-flash"
+    # model="huggingface/meta-llama/Llama-3.3-70B-Instruct"
 )
 
 
@@ -46,6 +47,7 @@ job_searcher_task = Task(
         ]
         """
     ),
+    tools=[job_searcher_tool],
     agent=job_searcher_agent
 )
 

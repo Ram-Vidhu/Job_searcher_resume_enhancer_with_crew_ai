@@ -8,3 +8,4 @@ streamlit
 google-genai
 pdfkit
 markdown
+sentence_transformers
