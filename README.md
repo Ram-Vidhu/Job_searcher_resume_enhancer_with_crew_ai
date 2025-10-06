@@ -1,75 +1,142 @@
 # Multi-Agent Job Recommendation and ATS-Friendly Resume Enhancement System
-This project is a sophisticated AI application that utilizes a CrewAI multi-agent system powered by Google Gemini 2.5 Flash to provide personalized job recommendations and generate an ATS-optimized resume draft from a user-uploaded PDF.
+
+This project is an advanced AI-powered application that uses a **CrewAI multi-agent system** powered by **Google Gemini 2.5 Flash** to provide **personalized job recommendations** and generate an **ATS-optimized resume draft** from a user-uploaded PDF.
+
+---
 
 ## Features
-Intelligent Resume Analysis: Agents read and summarize key details from your resume (skills, experience, role).
 
-Vector Database (RAG) Job Search: Semantic search is performed against a local ChromaDB to find the most relevant job postings.
+- **Intelligent Resume Analysis:**  
+  Agents automatically extract and summarize key details from your resume, including skills, experience, and current role.
 
-ATS-Friendly Enhancement: An agent drafts a revised resume in professional Markdown, incorporating keywords from recommended job listings.
+- **Vector Database (RAG) Job Search:**  
+  Performs semantic search against a local **ChromaDB** to find the most relevant job postings.
 
-Streamlit Web Interface: A clean, interactive UI for uploading your resume and viewing results.
+- **ATS-Friendly Resume Enhancement:**  
+  Generates a revised, keyword-rich resume draft in Markdown format optimized for Applicant Tracking Systems (ATS).
 
-PDF Download: Ability to download the enhanced resume draft as a PDF.
+- **Streamlit Web Interface:**  
+  Provides a clean and interactive user interface for uploading resumes and viewing results.
+
+- **PDF Export:**  
+  Allows downloading of the enhanced resume draft as a polished PDF.
+
+---
 
 ## Setup and Installation
-1. Prerequisites
-Before starting, ensure you have Python 3.9+ and pip installed.
 
-2. API Keys
-You need a Google Gemini API Key to run the LLM agents.
+### 1. Prerequisites
+Ensure you have the following installed on your system:
+- **Python 3.9+**
+- **pip** (Python package manager)
 
-Get your key from Google AI Studio.
+---
 
-Update the .env file in the root directory with your key:
+### 2. API Keys
 
-GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"
+This project requires a **Google Gemini API key** to power the AI agents.
 
-3. Data Download
-The project relies on a job postings dataset to build the recommendation vector database.
+- Obtain your key from [Google AI Studio](https://aistudio.google.com/).
+- Create a `.env` file in the project root and add the following line:
 
-Download the dataset from Kaggle:
-[Link](https://www.kaggle.com/datasets/asaniczka/1-3m-linkedin-jobs-and-skills-2024/data)
+```bash
+GEMINI_API_KEY="YOUR_GEMINI_API_KEY_HERE"
+```
 
-You will need the following files from the download:
+---
 
-job_skills.csv
+### 3. Data Download
 
-job_summary.csv
+The system uses a dataset of job postings to build the recommendation vector database.
 
-linkedin_job_postings.csv
+Download the dataset from Kaggle:  
+**[1.3M+ LinkedIn Jobs and Skills (2024)](https://www.kaggle.com/)**
 
-4. wkhtmltopdf for PDF Generation (Crucial Step)
-To enable the final PDF download of the enhanced resume (via the pdfkit package), the external command-line tool wkhtmltopdf must be installed on your system before installing Python dependencies.
+You’ll need the following files:
+- `job_skills.csv`
+- `job_summary.csv`
+- `linkedin_job_postings.csv`
 
-Operating System	Installation Command(s)
-Linux (Debian/Ubuntu)	1. sudo apt update 2. sudo apt-get install wkhtmltopdf
-Windows	1. Download the installer from the official site: [Link](https://wkhtmltopdf.org/downloads.html) 2. Run the installer and ensure the installation path is added to your system's PATH environment variable.
+---
 
-5. Dependency Installation
-Install all required Python packages:
+### 4. wkhtmltopdf for PDF Generation (Important)
 
+To enable PDF export of the enhanced resume (via the `pdfkit` Python package), the **wkhtmltopdf** tool must be installed **before** installing Python dependencies.
+
+#### Linux (Debian/Ubuntu)
+```bash
+sudo apt update
+sudo apt-get install wkhtmltopdf
+```
+
+#### Windows
+- Download the installer from [wkhtmltopdf.org/downloads.html](https://wkhtmltopdf.org/downloads.html)  
+- Run the installer and ensure the installation path is added to your **PATH** environment variable.
+
+---
+
+### 5. Install Python Dependencies
+
+Once prerequisites are installed, run:
+```bash
 pip install -r requirements.txt
+```
 
-How to Run the Application
-The setup requires two main steps: data ingestion (to build the job database) and application execution.
+---
 
-Step 1: Initialize the Job Vector Database (ChromaDB)
-Execute the GenAI_Project.ipynb notebook completely. This will:
+## How to Run the Application
 
-Locate and process the downloaded datasets (update paths if running locally).
+The setup involves two main steps: **building the job vector database** and **running the web application**.
 
-Load and process the data using PySpark.
+### Step 1: Initialize the Job Vector Database (ChromaDB)
 
-Generate embeddings for job postings.
+Run the **`GenAI_Project.ipynb`** notebook completely. This will:
+- Process the downloaded datasets (update file paths as needed)
+- Load and clean data using **PySpark**
+- Generate embeddings for job postings
+- Create a persistent `chroma_db` directory containing the vector store
 
-Create a persistent chroma_db directory containing the job vector store.
+---
 
-Step 2: Launch the Streamlit Application
-From your terminal in the project's root directory, execute the app.py file:
+### Step 2: Launch the Streamlit Web App
 
+From your project root, run:
+
+```bash
 streamlit run app.py
+```
 
-Your browser will open to the Streamlit application.
+This will launch the Streamlit interface in your browser.
 
-Upload your resume (PDF) and click "Start Analysis and Enhancement" to kick off the multi-agent crew.
+Upload your **resume (PDF)** and click **"Start Analysis and Enhancement"** to initiate the multi-agent pipeline.
+
+---
+
+## Directory Overview
+
+```
+project_root/
+├── app.py
+├── GenAI_Project.ipynb
+├── requirements.txt
+├── chroma_db/
+├── data/
+│   ├── job_skills.csv
+│   ├── job_summary.csv
+│   └── linkedin_job_postings.csv
+├── .env
+└── README.md
+```
+
+---
+
+## Tech Stack
+
+- **Language:** Python 3.9+  
+- **Framework:** Streamlit  
+- **AI Model:** Google Gemini 2.5 Flash  
+- **Database:** ChromaDB (Vector Database)  
+- **Data Processing:** PySpark  
+- **PDF Generation:** pdfkit + wkhtmltopdf  
+- **Agents:** CrewAI Multi-Agent Framework
+
