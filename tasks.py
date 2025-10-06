@@ -22,7 +22,7 @@ summarize_text_task = Task(
         '"role": "...", "skills": ["...", "..."], "summary":"....", "experience": "...", "last_location": "..."'
     """),
     agent=summarize_agent,
-    model="gemini/gemini-2.0-flash"
+    model="gemini/gemini-2.5-flash"
 )
 
 
