@@ -29,7 +29,7 @@ GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"
 The project relies on a job postings dataset to build the recommendation vector database.
 
 Download the dataset from Kaggle:
-[text](https://www.kaggle.com/datasets/asaniczka/1-3m-linkedin-jobs-and-skills-2024/data)
+[Link](https://www.kaggle.com/datasets/asaniczka/1-3m-linkedin-jobs-and-skills-2024/data)
 
 You will need the following files from the download:
 
@@ -44,7 +44,7 @@ To enable the final PDF download of the enhanced resume (via the pdfkit package)
 
 Operating System	Installation Command(s)
 Linux (Debian/Ubuntu)	1. sudo apt update 2. sudo apt-get install wkhtmltopdf
-Windows	1. Download the installer from the official site: [text](https://wkhtmltopdf.org/downloads.html) 2. Run the installer and ensure the installation path is added to your system's PATH environment variable.
+Windows	1. Download the installer from the official site: [Link](https://wkhtmltopdf.org/downloads.html) 2. Run the installer and ensure the installation path is added to your system's PATH environment variable.
 
 5. Dependency Installation
 Install all required Python packages:
