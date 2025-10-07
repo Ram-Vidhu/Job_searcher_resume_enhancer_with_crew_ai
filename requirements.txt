@@ -6,7 +6,6 @@ load_dotenv
 PyPDF2
 streamlit
 google-genai
-pdfkit
 markdown
 sentence_transformers
-weasyprint
+xhtml2pdf

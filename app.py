@@ -4,9 +4,8 @@ import tempfile
 import json
 import pandas as pd
 from crew import run_job_analysis_crew
-import pdfkit
 import markdown
-from weasyprint import HTML
+from xhtml2pdf import pisa
 import io
 
 
@@ -125,13 +124,12 @@ def main():
 
                             # Generate PDF in-memory
                             pdf_io = io.BytesIO()
-                            HTML(string=html_content).write_pdf(target=pdf_io)
-                            pdf_bytes = pdf_io.getvalue()
+                            pisa.CreatePDF(io.StringIO(html_content), dest=pdf_io)
 
                             # 3. Create the download button
                             st.download_button(
                                 label="⬇️ Download Enhanced Resume as PDF",
-                                data=pdf_bytes,
+                                data=pdf_io.getvalue(),
                                 file_name="enhanced_resume_draft.pdf",
                                 mime="application/pdf",
                                 help="Click to download your new, ATS-optimized resume draft."
@@ -139,7 +137,7 @@ def main():
                             st.success("PDF created successfully!")
 
                         except IOError as e:
-                            st.error(f"PDF Conversion Failed. Is 'wkhtmltopdf' installed and in your system's PATH? Error: {e}")
+                            st.error(f"PDF Conversion Failed. Error: {e}")
                             st.code(final_resume_markdown, language="markdown")
 
                         # --- End of NEW PDF LOGIC ---
