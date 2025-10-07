@@ -6,7 +6,9 @@ import pandas as pd
 from crew import run_job_analysis_crew
 import markdown
 from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.units import inch
 import io
 import re
 
@@ -121,30 +123,53 @@ def main():
 
                         # --- NEW PDF GENERATION & DOWNLOAD LOGIC ---
                         try:
-                            # 1. Convert Markdown to HTML
+                            # Convert markdown to HTML
                             html_content = markdown.markdown(final_resume_markdown)
 
-                            # Generate PDF in-memory
+                            # Clean up bad HTML (ReportLab can't handle <ul>, <li> directly)
+                            html_content = re.sub(r'<ul>', '', html_content)
+                            html_content = re.sub(r'</ul>', '', html_content)
+                            html_content = re.sub(r'<li>', '• ', html_content)
+                            html_content = re.sub(r'</li>', '<br/>', html_content)
+
+                            # Set up PDF buffer
                             pdf_io = io.BytesIO()
-                            c = canvas.Canvas(pdf_io, pagesize=letter)
-                            textobject = c.beginText(50, 750)
-                            textobject.setFont("Helvetica", 11)
+                            doc = SimpleDocTemplate(pdf_io, pagesize=letter,
+                                                    leftMargin=0.8*inch, rightMargin=0.8*inch,
+                                                    topMargin=0.8*inch, bottomMargin=0.8*inch)
 
-                            # Strip HTML tags for simplicity (optional)
-                            plain_text = re.sub(r'<[^>]+>', '', html_content)
+                            # Define styles
+                            styles = getSampleStyleSheet()
+                            styles.add(ParagraphStyle(name='Heading', fontSize=13, leading=16, spaceAfter=8, spaceBefore=8, bold=True))
+                            styles.add(ParagraphStyle(name='Body', fontSize=11, leading=14, spaceAfter=6))
+                            styles.add(ParagraphStyle(name='SmallGap', fontSize=8, spaceAfter=4))
 
-                            for line in plain_text.split("\n"):
-                                textobject.textLine(line)
-                                if textobject.getY() < 50:  # New page if text runs off
-                                    c.drawText(textobject)
-                                    c.showPage()
-                                    textobject = c.beginText(50, 750)
-                                    textobject.setFont("Helvetica", 11)
+                            # Split the HTML content into paragraphs
+                            parts = re.split(r'(<h\d>|<p>|<br\s*/?>)', html_content)
+                            elements = []
 
-                            c.drawText(textobject)
-                            c.showPage()
-                            c.save()
+                            for part in parts:
+                                part = part.strip()
+                                if not part:
+                                    continue
 
+                                # Headings
+                                if re.search(r'<h\d>', part):
+                                    text = re.sub(r'<.*?>', '', part)
+                                    elements.append(Paragraph(f"<b>{text}</b>", styles['Heading']))
+
+                                # Normal paragraphs
+                                else:
+                                    text = re.sub(r'<.*?>', '', part)
+                                    if text.strip():
+                                        elements.append(Paragraph(text, styles['Body']))
+
+                                # Add small spacing
+                                elements.append(Spacer(1, 4))
+
+                            # Build PDF
+                            doc.build(elements)
+                            pdf_io.seek(0)
                             pdf_bytes = pdf_io.getvalue()
 
                             # 3. Create the download button
