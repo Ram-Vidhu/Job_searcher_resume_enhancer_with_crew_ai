@@ -8,4 +8,4 @@ streamlit
 google-genai
 markdown
 sentence_transformers
-xhtml2pdf
+reportlab

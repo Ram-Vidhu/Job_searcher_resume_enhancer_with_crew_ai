@@ -5,8 +5,10 @@ import json
 import pandas as pd
 from crew import run_job_analysis_crew
 import markdown
-from xhtml2pdf import pisa
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 import io
+import re
 
 
 # Function to clean and parse the LLM JSON output
@@ -124,12 +126,31 @@ def main():
 
                             # Generate PDF in-memory
                             pdf_io = io.BytesIO()
-                            pisa.CreatePDF(io.StringIO(html_content), dest=pdf_io)
+                            c = canvas.Canvas(pdf_io, pagesize=letter)
+                            textobject = c.beginText(50, 750)
+                            textobject.setFont("Helvetica", 11)
+
+                            # Strip HTML tags for simplicity (optional)
+                            plain_text = re.sub(r'<[^>]+>', '', html_content)
+
+                            for line in plain_text.split("\n"):
+                                textobject.textLine(line)
+                                if textobject.getY() < 50:  # New page if text runs off
+                                    c.drawText(textobject)
+                                    c.showPage()
+                                    textobject = c.beginText(50, 750)
+                                    textobject.setFont("Helvetica", 11)
+
+                            c.drawText(textobject)
+                            c.showPage()
+                            c.save()
+
+                            pdf_bytes = pdf_io.getvalue()
 
                             # 3. Create the download button
                             st.download_button(
                                 label="⬇️ Download Enhanced Resume as PDF",
-                                data=pdf_io.getvalue(),
+                                data=pdf_bytes,
                                 file_name="enhanced_resume_draft.pdf",
                                 mime="application/pdf",
                                 help="Click to download your new, ATS-optimized resume draft."
