@@ -1,6 +1,6 @@
 from crewai import Task
-from tools import pdf_reader_tool
-from agents import reader_agent, summarize_agent, job_searcher_agent
+from tools import pdf_reader_tool, job_searcher_tool
+from agents import reader_agent, summarize_agent, job_searcher_agent, resume_formatter_agent, aggregator_agent
 
 read_pdf_task = Task(
     description="Read the content of the PDF document located at {pdf_path}.",
@@ -22,16 +22,79 @@ summarize_text_task = Task(
         '"role": "...", "skills": ["...", "..."], "summary":"....", "experience": "...", "last_location": "..."'
     """),
     agent=summarize_agent,
-    model="gemini/gemini-2.0-flash"
+    # model="gemini/gemini-2.0-flash"
+    # model="huggingface/meta-llama/Llama-3.3-70B-Instruct"
 )
 
+
 job_searcher_task = Task(
-    description="Using the provided resume details as parameter `resume_details` to the tool and search and provide the relevant jobs from the chromadb",
+    description=(
+        "**YOU MUST USE THE PROVIDED TOOL** with the resume details to search the chromadb. "
+        "The tool returns the job listings as a single JSON string. "
+        "Your final output MUST be the **RAW, UNMODIFIED JSON STRING** returned by the tool."
+    ),
     expected_output=(
         """
-        Give the output strictly in the below JSON format (ensure the [Job Title] and [Company] are correctly formatted keys):
+        A single JSON string containing the job results in the following structure (must match the tool's output format exactly, do not add any wrapping text or markdown fences):
+        [
+            {
+                "Job Title - Company": "...",
+                "Location": "...",
+                "Similarity Score": "..."
+                // ... all fields returned by the tool
+            },
+            // ...
+        ]
+        """
+    ),
+    tools=[job_searcher_tool],
+    agent=job_searcher_agent
+)
+
+resume_drafting_task = Task(
+    description=(
+        "Take the structured resume draft from the previous task and generate a final output document "
+        "using clean, professional **Markdown** formatting. Ensure proper headings, bolding, and bullet points "
+        "are used to create a visually clean, single-page resume layout."
+        "The output must ONLY be the Markdown content of the enhanced resume."
+    ),
+    expected_output=(
+        """
+        The complete, enhanced resume formatted as a single Markdown string, ready for display or PDF conversion.
+        """
+    ),
+    agent=resume_formatter_agent,
+)
+
+# # Format the Resume (Final step)
+# resume_formatting_task = Task(
+#     description=(
+#         "Take the structured resume draft from the previous task and generate a final output document "
+#         "using clean, professional **Markdown** formatting. Ensure proper headings, bolding, and bullet points "
+#         "are used to create a visually clean, single-page resume layout."
+#     ),
+#     expected_output=(
+#         """
+#         The complete, enhanced resume formatted as a single Markdown string, ready for display or PDF conversion.
+#         The output must ONLY be the Markdown content.
+#         """
+#     ),
+#     agent=resume_formatter_agent,
+#     output_file="enhanced_resume.md"
+# )
+
+aggregation_task = Task(
+    description=(
+        "Collect the Markdown-formatted enhanced resume from the previous task and the "
+        "Job Recommendation JSON (from the Job Searcher Task, available in context). "
+        "Combine them into a single JSON object with two top-level keys: 'jobs' and 'enhanced_resume_markdown'."
+    ),
+    expected_output=(
+        """
+        A single JSON object strictly in the following format:
         {
-            "job1": {
+            "jobs":{
+                "job1": {
                 "Job Title - Company": "...",
                 "Location": "...",
                 "Summary": "...",
@@ -39,16 +102,9 @@ job_searcher_task = Task(
                 "Link": "...",
                 "Similarity Score": "..."
             },
-            "job2": {
-                "Job Title - Company": "...",
-                "Location": "...",
-                "Summary": "...",
-                "Skills": "...",
-                "Link": "...",
-                "Similarity Score": "..."
-            }....
+"enhanced_resume_markdown": "### [User Name]... (Markdown content here)"
         }
         """
     ),
-    agent=job_searcher_agent
+    agent=aggregator_agent
 )

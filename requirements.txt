@@ -1,8 +1,11 @@
+pyspark
+chromadb
 crewai
 crewai_tools
 load_dotenv
 PyPDF2
-langchain_openai
 streamlit
 google-genai
-langchain-google-genai
+markdown
+sentence_transformers
+reportlab
