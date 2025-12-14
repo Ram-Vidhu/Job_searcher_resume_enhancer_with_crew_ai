@@ -1,6 +1,6 @@
 # Multi-Agent Job Recommendation and ATS-Friendly Resume Enhancement System
 
-This project is an advanced AI-powered application that uses a **CrewAI multi-agent system** powered by **Google Gemini 2.5 Flash** to provide **personalized job recommendations** and generate an **ATS-optimized resume draft** from a user-uploaded PDF.
+This project is an advanced AI-powered application that uses a **CrewAI multi-agent system** powered by **Google Gemini 2.5 Flash** to provide **personalized job recommendations** and generate an **ATS-optimized resume draft** from a user-uploaded PDF. It's deployed on Streamlit spaces: https://jobsearcherresumeenhancerwithcrewai-ng5qxw5ot2sbu9k7vqfbsk.streamlit.app/
 
 ---
 
@@ -102,13 +102,18 @@ Upload your **resume (PDF)** and click **"Start Analysis and Enhancement"** to i
 ```
 project_root/
 ├── app.py
-├── GenAI_Project.ipynb
-├── requirements.txt
+├── crew.py
+├── agents.py
+├── tasks.py
+├── tools.py
+├── Notebook/
+│   ├── GenAI_Project.ipynb
 ├── chroma_db/
 ├── data/
 │   ├── job_skills.csv
 │   ├── job_summary.csv
 │   └── linkedin_job_postings.csv
+├── requirements.txt
 ├── .env
 └── README.md
 ```
@@ -118,10 +123,12 @@ project_root/
 ## Tech Stack
 
 - **Language:** Python 3.9+  
-- **Framework:** Streamlit  
-- **AI Model:** Google Gemini 2.5 Flash  
-- **Database:** ChromaDB (Vector Database)  
-- **Data Processing:** PySpark  
-- **PDF Generation:** pdfkit + wkhtmltopdf  
+- **UI:** Streamlit
 - **Agents:** CrewAI Multi-Agent Framework
+- **AI Model:** Google Gemini 2.5 Flash  
+- **Database:** ChromaDB (Vector Database)
+- **Embedding Model:** sentence-transformers/all-MiniLM-L6-v2 (on Hugging Face)
+- **Data Processing:** PySpark  
+- **PDF Generation:** reportlab
+- **Hosted on:** Streamlit spaces
 
