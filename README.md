@@ -59,23 +59,8 @@ You’ll need the following files:
 
 ---
 
-### 4. wkhtmltopdf for PDF Generation (Important)
 
-To enable PDF export of the enhanced resume (via the `pdfkit` Python package), the **wkhtmltopdf** tool must be installed **before** installing Python dependencies.
-
-#### Linux (Debian/Ubuntu)
-```bash
-sudo apt update
-sudo apt-get install wkhtmltopdf
-```
-
-#### Windows
-- Download the installer from [wkhtmltopdf.org/downloads.html](https://wkhtmltopdf.org/downloads.html)  
-- Run the installer and ensure the installation path is added to your **PATH** environment variable.
-
----
-
-### 5. Install Python Dependencies
+### 4. Install Python Dependencies
 
 Once prerequisites are installed, run:
 ```bash
